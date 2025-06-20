@@ -7,5 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class Members extends Model
 {
-    use HasFactory;
+     protected $fillable = [
+        'FirstName',
+        'LastName',
+        'Email',
+        'Phone',
+        'Address',
+    ];
+    public $timestamps = false;
+
 }

@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix("members")->group(function () {
     Route::get("/", [MembersController::class, "index"]);
-    Route::post("/", [MembersController::class, "create"]);
+    Route::post("/create", [MembersController::class, "create"]);
 });
 
 
