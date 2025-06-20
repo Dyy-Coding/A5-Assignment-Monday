@@ -1,4 +1,6 @@
 <?php
+
+use App\Http\Controllers\AuthorController;
 use App\Http\Controllers\MembersController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -17,6 +19,14 @@ use Illuminate\Support\Facades\Route;
 Route::prefix("members")->group(function () {
     Route::get("/", [MembersController::class, "index"]);
     Route::post("/create", [MembersController::class, "create"]);
+});
+
+Route::prefix("authors")->group(function () {
+    Route::get("/", [AuthorController::class, "index"]);
+    Route::post("/create", [AuthorController::class, "create"]);
+    Route::get("/show/{id}", [AuthorController::class, "show"]);
+    Route::put("/update/{id}", [AuthorController::class, "update"]);
+    Route::delete("/delete/{id}", [AuthorController::class, "destroy"]);
 });
 
 
