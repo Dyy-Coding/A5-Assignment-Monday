@@ -90,14 +90,14 @@ class MembersController extends Controller
     {
        $deleted = Members::where('id', $id)->delete();
 
-    if ($deleted) {
-        return response()->json([
-            'message' => 'Member deleted successfully'
-        ],200);
-    }
+        if ($deleted) {
+            return response()->json([
+                'message' => 'Member deleted successfully'
+            ],200);
+        }
 
-    return response()->json([
-        'message' => 'Member not found or already deleted'
-    ], 404);
+        return response()->json([
+            'message' => 'Member not found or already deleted'
+        ], 404);
     }
 }

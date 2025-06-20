@@ -45,35 +45,27 @@ class BookController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
     {
-        //
+        $Updatebook = Books::where('id', $id)->update([
+            'image' => $request->image,
+            'title' => $request->title,
+            'Isnb' => $request->Isnb,
+            'author' => $request->author,
+            'Publication_years' => $request->Publication_years,
+            'Number_of_Copies' => $request->Number_of_Copies,
+            'Categories' => $request->Categories
+        ]);
+
+
+        if($Updatebook){
+            return response()->json([
+                "message" => "Book updated successfully",
+                "book" => $Updatebook
+            ], 201);
+        }
     }
 
     /**
@@ -81,6 +73,15 @@ class BookController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $DeleteBook = Books::where('id', $id)->delete();
+        if ($DeleteBook) {
+            return response()->json([
+            "message" => "Book deleted successfully"
+        ], 200);
+            
+        }
+        return response()->json([
+            "message" => "Book not found"
+        ], 404);
     }
 }
