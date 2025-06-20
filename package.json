@@ -1,0 +1,23 @@
+{
+  "name": "a5-assignment-monday",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dyy-Coding/A5-Assignment-Monday.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Dyy-Coding/A5-Assignment-Monday/issues"
+  },
+  "homepage": "https://github.com/Dyy-Coding/A5-Assignment-Monday#readme",
+  "description": "",
+  "dependencies": {
+    "vue-router": "^4.5.1"
+  }
+}
