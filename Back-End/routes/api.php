@@ -1,5 +1,5 @@
 <?php
-
+use App\Http\Controllers\MembersController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,7 +14,10 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
-
+Route::prefix("members")->group(function () {
+    Route::get("/", [MembersController::class, "index"]);
+    Route::post("/", [MembersController::class, "create"]);
+});
 
 
 
