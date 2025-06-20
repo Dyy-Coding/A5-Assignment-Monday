@@ -1,4 +1,6 @@
 <?php
+
+use App\Http\Controllers\BookController;
 use App\Http\Controllers\MembersController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -19,6 +21,12 @@ Route::prefix("members")->group(function () {
     Route::post("/create", [MembersController::class, "create"]);
     Route::put("/update/{id}", [MembersController::class, "update"]);
     Route::delete("/delete/{id}", [MembersController::class, "destroy"]);
+});
+Route::prefix("Books")->group(function(){
+    Route::get("/",[BookController::class, "index"]);
+    Route::post("/create",[BookController::class, "create"]);
+    Route::put("/update/{id}",[BookController::class, "update"]);
+    Route::delete("/delete/{id}",[BookController::class, "destroy"]);
 });
 
 
