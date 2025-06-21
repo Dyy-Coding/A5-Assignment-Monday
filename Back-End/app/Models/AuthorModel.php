@@ -2,18 +2,26 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class AuthorModel extends Model
 {
-    protected $table = 'authors'; // Change this if your table is named differently
-
+    protected $table = 'authors';
     protected $fillable = [
         'name',
         'dateofbirth',
         'nationality',
         'numberOfWrittenBook',
+        'image'
     ];
-    public $timestamps = false;
+
+    protected $appends = ['image_url'];
+
+    public function getImageUrlAttribute()
+{
+    return $this->image
+        ? url($this->image)
+        : null;
+}
+
 }
