@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Members;
-
+use PhpParser\Node\Expr\FuncCall;
 class MembersController extends Controller
 {
     /**
@@ -44,7 +44,7 @@ class MembersController extends Controller
     return response()->json([
         "message" => "Failed to create member"
     ], 500);
-    
+
     }
 
     /**
@@ -66,16 +66,38 @@ class MembersController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, int $id)
     {
-        //
+        $UpdateMember= Members::where("id",$id)->update([
+            "FirstName" => $request->FirstName,
+            "LastName" => $request->LastName,
+            "Email" => $request->Email,
+            "Phone" => $request->Phone,
+            "Address" => $request->Address,
+        ]);
+        if($UpdateMember){
+            return response()->json([
+                "message"=>"Member update successfully",
+                "member"=>$UpdateMember
+            ],201);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(int $id)
     {
-        //
+       $deleted = Members::where('id', $id)->delete();
+
+        if ($deleted) {
+            return response()->json([
+                'message' => 'Member deleted successfully'
+            ],200);
+        }
+
+        return response()->json([
+            'message' => 'Member not found or already deleted'
+        ], 404);
     }
 }
