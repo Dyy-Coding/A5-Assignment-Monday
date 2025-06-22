@@ -7,45 +7,80 @@
     <form @submit.prevent="updateAuthor" v-if="author" class="space-y-6">
       <!-- Image Preview -->
       <div v-if="author.image_url" class="flex justify-center">
-        <img :src="author.image_url" alt="Author Image" class="w-32 h-32 rounded-full object-cover border-4 border-indigo-400 shadow-lg" />
+        <img :src="author.image_url" alt="Author Image"
+             class="w-32 h-32 rounded-full object-cover border-4 border-indigo-400 shadow-lg" />
       </div>
 
       <!-- Form Inputs -->
       <div class="grid gap-4 md:grid-cols-2">
         <div>
           <label class="block text-sm font-semibold text-gray-600 mb-1">Name</label>
-          <input v-model="form.name" type="text" placeholder="Author Name" class="w-full input-field" required />
+          <input
+            v-model="form.name"
+            type="text"
+            placeholder="Author Name"
+            required
+            class="w-full border border-gray-300 rounded-lg px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-500"
+          />
         </div>
         <div>
           <label class="block text-sm font-semibold text-gray-600 mb-1">Date of Birth</label>
-          <input v-model="form.dateofbirth" type="date" class="w-full input-field" required />
+          <input
+            v-model="form.dateofbirth"
+            type="date"
+            required
+            class="w-full border border-gray-300 rounded-lg px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-500"
+          />
         </div>
         <div>
           <label class="block text-sm font-semibold text-gray-600 mb-1">Nationality</label>
-          <input v-model="form.nationality" type="text" placeholder="Nationality" class="w-full input-field" required />
+          <input
+            v-model="form.nationality"
+            type="text"
+            placeholder="Nationality"
+            required
+            class="w-full border border-gray-300 rounded-lg px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-500"
+          />
         </div>
         <div>
           <label class="block text-sm font-semibold text-gray-600 mb-1">Books Written</label>
-          <input v-model.number="form.numberOfWrittenBook" type="number" class="w-full input-field" required />
+          <input
+            v-model.number="form.numberOfWrittenBook"
+            type="number"
+            required
+            class="w-full border border-gray-300 rounded-lg px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-500"
+          />
         </div>
         <div class="md:col-span-2">
           <label class="block text-sm font-semibold text-gray-600 mb-1">Update Image</label>
-          <input @change="handleImageUpload" type="file" accept="image/*" class="block w-full text-sm text-slate-500
-            file:mr-4 file:py-2 file:px-4
-            file:rounded-lg file:border-0
-            file:text-sm file:font-semibold
-            file:bg-indigo-50 file:text-indigo-700
-            hover:file:bg-indigo-100
-          " />
+          <input
+            @change="handleImageUpload"
+            type="file"
+            accept="image/*"
+            class="block w-full text-sm text-slate-500
+              file:mr-4 file:py-2 file:px-4
+              file:rounded-lg file:border-0
+              file:text-sm file:font-semibold
+              file:bg-indigo-50 file:text-indigo-700
+              hover:file:bg-indigo-100"
+          />
         </div>
       </div>
 
       <!-- Buttons -->
       <div class="flex flex-wrap justify-center gap-4 pt-6">
-        <button type="submit"           class="bg-yellow-400 hover:bg-yellow-500 text-white font-semibold rounded-lg py-3 px-8 shadow-lg transition-colors duration-250"
->💾 Update</button>
-        <button @click.prevent="$router.push('/authors')"           class="bg-red-400 hover:bg-red-500 text-white font-semibold rounded-lg py-3 px-8 shadow-lg transition-colors duration-250"
->↩️ Cancel</button>
+        <button
+          type="submit"
+          class="bg-yellow-400 hover:bg-yellow-500 text-white font-semibold rounded-lg py-3 px-8 shadow-lg transition-colors duration-250"
+        >
+          💾 Update
+        </button>
+        <button
+          @click.prevent="$router.push('/authors')"
+          class="bg-red-400 hover:bg-red-500 text-white font-semibold rounded-lg py-3 px-8 shadow-lg transition-colors duration-250"
+        >
+          ↩️ Cancel
+        </button>
       </div>
     </form>
 
@@ -99,33 +134,52 @@ export default {
       this.form.image = event.target.files[0];
     },
     async updateAuthor() {
-      const formData = new FormData();
-      formData.append('name', this.form.name);
-      formData.append('dateofbirth', this.form.dateofbirth);
-      formData.append('nationality', this.form.nationality);
-      formData.append('numberOfWrittenBook', this.form.numberOfWrittenBook);
-      if (this.form.image) {
-        formData.append('image', this.form.image);
-      }
+        const formData = new FormData();
+        formData.append('name', this.form.name);
+        formData.append('dateofbirth', this.form.dateofbirth);
+        formData.append('nationality', this.form.nationality);
+        formData.append('numberOfWrittenBook', this.form.numberOfWrittenBook);
 
-      try {
-        await axios.post(
-          `http://127.0.0.1:8000/api/authors/update/${this.authorId}`,
-          formData,
-          { headers: { 'Content-Type': 'multipart/form-data' } }
-        );
-        alert('✅ Author updated successfully!');
-        this.$router.push('/authors');
-      } catch (error) {
-        console.error('Update failed:', error);
-        alert('❌ Failed to update author.');
-      }
-    }
+        if (this.form.image) {
+            formData.append('image', this.form.image);
+        }
+
+        // Tell Laravel to treat this POST as a PUT
+        formData.append('_method', 'PUT');
+
+        try {
+            await axios.post(
+            `http://127.0.0.1:8000/api/authors/update/${this.authorId}`,
+            formData,
+            {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            }
+            );
+            alert('✅ Author updated successfully!');
+            this.$router.push('/authors');
+        } catch (error) {
+            if (error.response && error.response.status === 422) {
+            const errors = error.response.data.errors || error.response.data;
+            console.error('Validation errors:', errors);
+            alert(
+                'Validation errors:\n' +
+                Object.entries(errors)
+                    .map(([field, msgs]) =>
+                    Array.isArray(msgs) ? `${field}: ${msgs.join(', ')}` : `${field}: ${msgs}`
+                    )
+                    .join('\n')
+            );
+            } else {
+            console.error('Update failed:', error);
+            alert('❌ Failed to update author.');
+            }
+        }
+        }
+
+
   },
   mounted() {
     this.fetchAuthor();
   }
 };
 </script>
-
-

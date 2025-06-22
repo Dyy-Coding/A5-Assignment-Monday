@@ -91,48 +91,49 @@ class AuthorController extends Controller
      * Update an existing author and optionally update image.
      */
     public function update(Request $request, $id)
-    {
-        $author = AuthorModel::find($id);
+{
+    $author = AuthorModel::find($id);
 
-        if (!$author) {
-            return response()->json([
-                "message" => "Author not found."
-            ], 404);
-        }
-
-        $request->validate([
-            'name' => 'required|string|max:50',
-            'dateofbirth' => 'required|date',
-            'nationality' => 'required|string|max:100',
-            'numberOfWrittenBook' => 'required|integer',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
-        ]);
-
-        if ($request->hasFile('image')) {
-            if ($author->image && file_exists(public_path($author->image))) {
-                unlink(public_path($author->image));
-            }
-
-            $filename = Str::uuid() . '.' . $request->file('image')->getClientOriginalExtension();
-            $request->file('image')->move(public_path('images/authors'), $filename);
-            $author->image = 'images/authors/' . $filename;
-        }
-
-        $author->update([
-            'name' => $request->name,
-            'dateofbirth' => $request->dateofbirth,
-            'nationality' => $request->nationality,
-            'numberOfWrittenBook' => $request->numberOfWrittenBook,
-            'image' => $author->image
-        ]);
-
-        $author->image_url = $author->image ? url($author->image) : null;
-
+    if (!$author) {
         return response()->json([
-            'message' => 'Author updated successfully.',
-            'data' => $author
-        ]);
+            "message" => "Author not found."
+        ], 404);
     }
+
+    $request->validate([
+        'name' => 'required|string|max:50',
+        'dateofbirth' => 'required|date',
+        'nationality' => 'required|string|max:100',
+        'numberOfWrittenBook' => 'required|integer',
+        'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+    ]);
+
+    // Check if image uploaded
+    if ($request->hasFile('image')) {
+        $filename = Str::uuid() . '.' . $request->file('image')->getClientOriginalExtension();
+        $request->file('image')->move(public_path('images/authors'), $filename);
+        $author->image = 'images/authors/' . $filename;
+    }
+
+    // Update other fields
+    $author->name = $request->name;
+    $author->dateofbirth = $request->dateofbirth;
+    $author->nationality = $request->nationality;
+    $author->numberOfWrittenBook = $request->numberOfWrittenBook;
+
+    if (!$author->save()) {
+        return response()->json([
+            "message" => "Update data failed."
+        ], 500);
+    }
+
+    $author->image_url = $author->image ? url($author->image) : null;
+
+    return response()->json([
+        'message' => 'Author updated successfully.',
+        'data' => $author
+    ], 200);
+}
 
     /**
      * Remove the specified resource from storage.
