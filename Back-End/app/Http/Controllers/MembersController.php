@@ -1,103 +1,116 @@
 <?php
 
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Member;
 use App\Models\Members;
-use PhpParser\Node\Expr\FuncCall;
+
 class MembersController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the members.
      */
     public function index()
     {
-        $members = new Members();
         return response()->json([
-            "message" => "request successfully",
-            "members" => $members::all()
+            "message" => "Request successful",
+            "members" => Members::all()
         ], 200);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Store a newly created member.
      */
     public function create(Request $request)
-
-    {
-        $Newmember = Members::create([
-        "FirstName" => $request->FirstName,
-        "LastName" => $request->LastName,
-        "Email" => $request->Email,
-        "Phone" => $request->Phone,
-        "Address" => $request->Address,
+{
+    $validated = $request->validate([
+        'FirstName' => 'required|string|max:255',
+        'LastName' => 'required|string|max:255',
+        'Email' => 'required|email|unique:members',
+        'Phone' => 'required|string',
+        'Address' => 'required|string',
+        'Image' => 'nullable|image|max:2048',  // max 2MB
     ]);
 
-    if ($Newmember) {
-        return response()->json([
-            "message" => "Member created successfully",
-            "member" => $Newmember
-        ], 201);
+    if ($request->hasFile('Image')) {
+        $path = $request->file('Image')->store('members', 'public');
+        $validated['Image'] = $path;
     }
+
+    $member = Members::create($validated);
 
     return response()->json([
-        "message" => "Failed to create member"
-    ], 500);
+        'message' => 'Member created successfully',
+        'member' => $member,
+    ], 201);
+}
 
-    }
 
     /**
-     * Display the specified resource.
+     * Display the specified member.
      */
     public function show(string $id)
     {
-        //
-    }
+        $member = Members::find($id);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, int $id)
-    {
-        $UpdateMember= Members::where("id",$id)->update([
-            "FirstName" => $request->FirstName,
-            "LastName" => $request->LastName,
-            "Email" => $request->Email,
-            "Phone" => $request->Phone,
-            "Address" => $request->Address,
-        ]);
-        if($UpdateMember){
+        if ($member) {
             return response()->json([
-                "message"=>"Member update successfully",
-                "member"=>$UpdateMember
-            ],201);
-        }
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(int $id)
-    {
-       $deleted = Members::where('id', $id)->delete();
-
-        if ($deleted) {
-            return response()->json([
-                'message' => 'Member deleted successfully'
-            ],200);
+                "message" => "Member retrieved successfully",
+                "member" => $member
+            ], 200);
         }
 
         return response()->json([
-            'message' => 'Member not found or already deleted'
+            "message" => "Member not found"
         ], 404);
+    }
+
+    /**
+     * Update the specified member.
+     */
+    public function update(Request $request, int $id)
+    {
+        $request->validate([
+            'FirstName' => 'required|string',
+            'LastName' => 'required|string',
+            'Email' => 'required|email',
+            'Phone' => 'required|string',
+            'Address' => 'required|string',
+            'Image' => 'nullable|string',
+        ]);
+
+        $member = Members::find($id);
+
+        if (!$member) {
+            return response()->json(["message" => "Member not found"], 404);
+        }
+
+        $member->update($request->all());
+
+        return response()->json([
+            "message" => "Member updated successfully",
+            "member" => $member
+        ], 200);
+    }
+
+    /**
+     * Remove the specified member.
+     */
+    public function destroy(int $id)
+    {
+        $member = Members::find($id);
+
+        if (!$member) {
+            return response()->json([
+                'message' => 'Member not found or already deleted'
+            ], 404);
+        }
+
+        $member->delete();
+
+        return response()->json([
+            'message' => 'Member deleted successfully'
+        ], 200);
     }
 }

@@ -4,25 +4,15 @@
       <div
         v-for="author in filteredAuthors"
         :key="author.id"
-        class="relative border border-gray-200 rounded-xl p-5 hover:shadow-md transition duration-300 hover:-translate-y-1"
+        class="border border-gray-200 rounded-xl p-5 hover:shadow-md transition duration-300 hover:-translate-y-1"
       >
-        <!-- Delete icon top-right -->
-        <button
-          @click="$emit('delete-author', author.id)"
-          class="absolute top-3 right-3 text-red-600 hover:text-red-800 focus:outline-none"
-          aria-label="Delete author"
-          title="Delete author"
-        >
-          <span class="material-icons">delete</span>
-        </button>
-
         <div class="flex items-center space-x-4 mb-4">
-          <div class="bg-purple-100 text-purple-800 rounded-full p-3 cursor-pointer" @click="$emit('edit-author', author.id)">
-            <span class="material-icons">edit</span>
+          <div class="bg-purple-100 text-purple-800 rounded-full p-3">
+            <span  @click="$emit('edit-author', author.id)" class="material-icons">edit</span>
           </div>
           <div>
             <h3 class="text-lg font-semibold text-gray-800">{{ author.name }}</h3>
-            <p class="text-sm text-gray-500">{{ author.numberOfWrittenBook }} published books</p>
+            <p class="text-sm text-gray-500">{{ (author.numberOfWrittenBook) }} published books</p>
           </div>
         </div>
        

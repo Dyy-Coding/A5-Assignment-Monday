@@ -23,12 +23,14 @@ Route::prefix("members")->group(function () {
     Route::put("/update/{id}", [MembersController::class, "update"]);
     Route::delete("/delete/{id}", [MembersController::class, "destroy"]);
 });
-Route::prefix("Books")->group(function(){
-    Route::get("/",[BookController::class, "index"]);
-    Route::post("/create",[BookController::class, "create"]);
-    Route::put("/update/{id}",[BookController::class, "update"]);
-    Route::delete("/delete/{id}",[BookController::class, "destroy"]);
+Route::prefix('books')->group(function () {
+    Route::get('/', [BookController::class, 'index']);
+    Route::post('/create', [BookController::class, 'create']); // <--- POST here
+    Route::get('/show/{id}', [BookController::class, 'show']);
+    Route::put('/update/{id}', [BookController::class, 'update']);
+    Route::delete('/delete/{id}', [BookController::class, 'destroy']);
 });
+
 
 Route::prefix("authors")->group(function () {
     Route::get("/", [AuthorController::class, "index"]);

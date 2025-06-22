@@ -7,14 +7,27 @@ use Illuminate\Database\Eloquent\Model;
 
 class Books extends Model
 {
+    use HasFactory;
+
+    // Use snake_case and match migration exactly
     protected $fillable = [
-        "id",
-        "image",
-        "title",
-        "Isnb",
-        "author",
-        "Publication_years",
-        "Number_of_Copies",
-        "Categories"
+        'image',
+        'isbn',
+        'title',
+        'author',
+        'publication_year',
+        'number_of_copies',
+        'category',
+        'priority',
     ];
+
+    protected $appends = ['image_url'];
+
+    // Accessor for full image URL
+    public function getImageUrlAttribute()
+    {
+        return $this->image
+            ? url('storage/' . $this->image)
+            : null;
+    }
 }
