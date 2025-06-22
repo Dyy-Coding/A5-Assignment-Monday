@@ -18,13 +18,10 @@ return new class extends Migration
             $table->string('Email');
             $table->string('Phone');
             $table->string('Address');
+            $table->string('Image')->nullable(); // Add image column here
+            $table->timestamps(); // Optional but recommended
         });
-        
-
-
     }
-
-
 
     /**
      * Reverse the migrations.
