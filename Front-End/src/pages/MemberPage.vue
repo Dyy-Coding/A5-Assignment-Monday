@@ -137,7 +137,7 @@ export default {
     },
     handleDeleteMember(memberId) {
       if (confirm('Are you sure you want to delete this member?')) {
-        axios.delete(`http://localhost:8000/api/members/${memberId}`)
+        axios.delete(`http://localhost:8000/api/members/delete/${memberId}`)
           .then(() => {
             this.members = this.members.filter(m => m.id !== memberId);
           })

@@ -21,6 +21,7 @@ Route::prefix("members")->group(function () {
     Route::get("/", [MembersController::class, "index"]);
     Route::post("/create", [MembersController::class, "create"]);
     Route::put("/update/{id}", [MembersController::class, "update"]);
+    Route::get("/show/{id}", [MembersController::class, "show"]);
     Route::delete("/delete/{id}", [MembersController::class, "destroy"]);
 });
 Route::prefix('books')->group(function () {
