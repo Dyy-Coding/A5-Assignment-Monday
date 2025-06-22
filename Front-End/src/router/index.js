@@ -19,13 +19,17 @@ const routes = [
   // Redirect to books as homepage
   { path: '/', redirect: '/books' },
 
-  // Book Routes
+  // ✅ Book Routes (updated)
   { path: '/books', component: BookPage },
   {
     path: '/books/:id',
     name: 'BookDetail',
     component: BookDetail,
-    props: route => ({ bookId: route.params.id }),
+    props: route => ({
+      bookId: route.params.id,
+      books: [],      // Avoid prop warning
+      search: ''      // Avoid prop warning
+    }),
   },
   {
     path: '/books/:id/edit',
@@ -50,21 +54,19 @@ const routes = [
   },
 
   // Member Routes
-  // Member Routes
-{ path: '/members', component: MemberPage },
-{
-  path: '/members/:id',
-  name: 'MemberDetail',
-  component: MemberDetail,
-  props: route => ({ memberId: route.params.id }),
-},
-{
-  path: '/members/:id/edit',
-  name: 'EditFormMember',
-  component: EditFormMember,
-  props: route => ({ memberId: route.params.id }),
-},
-
+  { path: '/members', component: MemberPage },
+  {
+    path: '/members/:id',
+    name: 'MemberDetail',
+    component: MemberDetail,
+    props: route => ({ memberId: route.params.id }),
+  },
+  {
+    path: '/members/:id/edit',
+    name: 'EditFormMember',
+    component: EditFormMember,
+    props: route => ({ memberId: route.params.id }),
+  },
 ]
 
 const router = createRouter({
