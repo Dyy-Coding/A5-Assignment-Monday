@@ -112,7 +112,7 @@ export default {
           formData.append('image', this.author.image)
         }
 
-        const res = await axios.post('http://127.0.0.1:8000/api/authorscreate', formData, {
+        const res = await axios.post('http://127.0.0.1:8000/api/authors/create', formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         })
 

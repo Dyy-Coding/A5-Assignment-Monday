@@ -39,6 +39,8 @@
         :authors="authors"
         :search="search"
         @view-profile="handleViewProfile"
+        @edit-author="editAuthor"
+        @delete-author="deleteAuthor"
       />
     </div>
   </div>
@@ -53,53 +55,58 @@ export default {
   components: { CreateForm, DataShowGrid },
   data() {
     return {
-      authors: [], // Will be populated from API
+      authors: [], // List of authors
       search: '',
       showAddForm: false,
     }
   },
   methods: {
-    // Fetch authors from API and parse book data
     async fetchAuthors() {
       try {
         const res = await axios.get('http://127.0.0.1:8000/api/authors')
-
-        // Check if response is wrapped in { data: [...] }
         const authorsRaw = Array.isArray(res.data) ? res.data : res.data.data
-        console.log(res.data);
-
-        // Parse books from JSON string if needed
         this.authors = authorsRaw.map(author => ({
           ...author,
-          books: typeof author.books === 'string'
-            ? JSON.parse(author.books)
-            : (author.books || [])
+          books: typeof author.books === 'string' ? JSON.parse(author.books) : (author.books || [])
         }))
-        
       } catch (err) {
         console.error('Error fetching authors:', err)
       }
     },
 
-    // Handle new author added from CreateForm
     handleAuthorAdded(newAuthor) {
       const parsedAuthor = {
         ...newAuthor,
-        books: typeof newAuthor.books === 'string'
-          ? JSON.parse(newAuthor.books)
-          : (newAuthor.books || [])
+        books: typeof newAuthor.books === 'string' ? JSON.parse(newAuthor.books) : (newAuthor.books || [])
       }
       this.authors.push(parsedAuthor)
       this.showAddForm = false
     },
 
-    // Navigate to author profile
     handleViewProfile(authorId) {
       this.$router.push({ name: 'AuthorDetail', params: { id: authorId } })
+    },
+
+    // Pass authorId to editAuthor method
+    editAuthor(authorId) {
+      this.$router.push({ name: 'EditAuthor', params: { id: authorId } })
+    },
+
+    // Pass authorId to deleteAuthor method and update local list after deletion
+    async deleteAuthor(authorId) {
+      if (!confirm('Are you sure you want to delete this author? This action cannot be undone.')) {
+        return
+      }
+      try {
+        await axios.delete(`http://127.0.0.1:8000/api/authors/delete/${authorId}`)
+        alert('Author deleted successfully.')
+        this.authors = this.authors.filter(author => author.id !== authorId)
+      } catch (error) {
+        console.error('Failed to delete author:', error)
+        alert('Failed to delete author. Please try again.')
+      }
     }
   },
-
-  // Lifecycle hook: fetch data on mount
   mounted() {
     this.fetchAuthors()
   }

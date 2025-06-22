@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\AuthorModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\File;
+
 
 class AuthorController extends Controller
 {
@@ -28,7 +30,7 @@ class AuthorController extends Controller
      * Create a new author and handle image upload.
      */
 
-public function create(Request $request)
+       public function create(Request $request)
 {
     $request->validate([
         'name' => 'required|string|max:50',
@@ -38,29 +40,37 @@ public function create(Request $request)
         'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
     ]);
 
-    $filename = null;
-    // if ($request->hasFile('image')) {
-    //     $file = $request->file('image');
-    //     $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
-    //     $file->move(public_path('images/authors'), $filename);
-    // }
+    $imagePath = null;
+
+    if ($request->hasFile('image')) {
+        $filename = Str::uuid() . '.' . $request->file('image')->getClientOriginalExtension();
+        $request->file('image')->move(public_path('images/authors'), $filename);
+        $imagePath = 'images/authors/' . $filename;
+    }
 
     $author = AuthorModel::create([
         'name' => $request->name,
         'dateofbirth' => $request->dateofbirth,
         'nationality' => $request->nationality,
         'numberOfWrittenBook' => $request->numberOfWrittenBook,
-        'image' => $filename, // store filename only
+        'image' => $imagePath
     ]);
 
-    // Append image_url attribute dynamically
-    $author->image_url = $author->image ? url('images/authors/' . $author->image) : null;
+    if (!$author) {
+        return response()->json([
+            "message" => "Create data failed."
+        ], 500);
+    }
+
+    $author->image_url = $imagePath ? url($imagePath) : null;
 
     return response()->json([
         'message' => 'Author created successfully.',
-        'data' => $author,
+        'data' => $author
     ], 201);
 }
+
+
 
 
     /**

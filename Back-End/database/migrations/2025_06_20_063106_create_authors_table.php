@@ -17,8 +17,8 @@ return new class extends Migration
             $table->date("dateofbirth");
             $table->string("nationality", 100);
             $table->integer("numberOfWrittenBook");
-            $table->string("image")->nullable(); // Add this line to store image path
-
+            $table->string("image")->nullable();
+            $table->timestamps(); // Adds created_at and updated_at columns
         });
     }
 

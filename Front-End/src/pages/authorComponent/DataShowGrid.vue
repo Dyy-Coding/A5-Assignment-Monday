@@ -4,35 +4,28 @@
       <div
         v-for="author in filteredAuthors"
         :key="author.id"
-        class="border border-gray-200 rounded-xl p-5 hover:shadow-md transition duration-300 hover:-translate-y-1"
+        class="relative border border-gray-200 rounded-xl p-5 hover:shadow-md transition duration-300 hover:-translate-y-1"
       >
+        <!-- Delete icon top-right -->
+        <button
+          @click="$emit('delete-author', author.id)"
+          class="absolute top-3 right-3 text-red-600 hover:text-red-800 focus:outline-none"
+          aria-label="Delete author"
+          title="Delete author"
+        >
+          <span class="material-icons">delete</span>
+        </button>
+
         <div class="flex items-center space-x-4 mb-4">
-          <div class="bg-purple-100 text-purple-800 rounded-full p-3">
+          <div class="bg-purple-100 text-purple-800 rounded-full p-3 cursor-pointer" @click="$emit('edit-author', author.id)">
             <span class="material-icons">edit</span>
           </div>
           <div>
             <h3 class="text-lg font-semibold text-gray-800">{{ author.name }}</h3>
-            <p class="text-sm text-gray-500">{{ (author.numberOfWrittenBook) }} published books</p>
+            <p class="text-sm text-gray-500">{{ author.numberOfWrittenBook }} published books</p>
           </div>
         </div>
-        <!-- <div class="mb-3">
-          <h4 class="text-sm font-medium text-gray-700 mb-1">Notable Works:</h4>
-          <div class="flex flex-wrap gap-2">
-            <span
-              v-for="(book, index) in (author.books || []).slice(0, 3)"
-              :key="index"
-              class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded"
-            >
-              {{ book }}
-            </span>
-            <span
-              v-if="author.books && author.books.length > 3"
-              class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded"
-            >
-              +{{ author.books.length - 3 }} more
-            </span>
-          </div> -->
-        <!-- </div> -->
+       
         <div class="mt-4 pt-3 border-t border-gray-100 flex justify-between">
           <button
             @click="$emit('view-profile', author.id)"
