@@ -19,8 +19,8 @@
         />
         <input
           v-model="form.Email"
-          placeholder="Email"
           type="email"
+          placeholder="Email"
           class="border border-sky-300 focus:ring-2 focus:ring-sky-400 focus:outline-none px-4 py-3 rounded-xl bg-white shadow-sm text-gray-800 placeholder-sky-300 transition"
         />
         <input
@@ -33,11 +33,24 @@
           placeholder="Address"
           class="md:col-span-2 border border-sky-300 focus:ring-2 focus:ring-sky-400 focus:outline-none px-4 py-3 rounded-xl bg-white shadow-sm text-gray-800 placeholder-sky-300 transition"
         />
-        <input
-          @change="handleFileUpload"
-          type="file"
-          class="md:col-span-2 border border-sky-300 focus:ring-2 focus:ring-sky-400 focus:outline-none px-4 py-3 rounded-xl bg-white shadow-sm text-gray-800 transition file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-sky-600 file:text-white hover:file:bg-sky-700"
-        />
+
+        <!-- 👇 Image Preview Section -->
+        <div class="md:col-span-2">
+          <label class="block mb-2 text-sm font-medium text-sky-700">Current Image:</label>
+          <div v-if="previewImage" class="mb-4">
+            <img
+              :src="previewImage"
+              alt="Preview"
+              class="w-24 h-24 object-cover rounded-full border border-sky-300"
+            />
+          </div>
+          <input
+            type="file"
+            @change="handleFileUpload"
+            class="w-full border border-sky-300 focus:ring-2 focus:ring-sky-400 focus:outline-none px-4 py-3 rounded-xl bg-white shadow-sm text-gray-800 transition
+                   file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-sky-600 file:text-white hover:file:bg-sky-700"
+          />
+        </div>
       </div>
 
       <!-- Buttons -->
@@ -79,7 +92,8 @@ export default {
         Phone: '',
         Address: ''
       },
-      imageFile: null
+      imageFile: null,
+      previewImage: null
     };
   },
   mounted() {
@@ -93,6 +107,9 @@ export default {
           Phone: member.Phone,
           Address: member.Address
         };
+        this.previewImage = member.Image?.startsWith('http')
+          ? member.Image
+          : `http://localhost:8000/${member.Image}`;
       })
       .catch(error => {
         console.error('Error loading member:', error);
@@ -102,17 +119,32 @@ export default {
   methods: {
     handleFileUpload(event) {
       this.imageFile = event.target.files[0];
+      if (this.imageFile) {
+        const reader = new FileReader();
+        reader.onload = e => {
+          this.previewImage = e.target.result;
+        };
+        reader.readAsDataURL(this.imageFile);
+      }
     },
     async updateMember() {
       try {
         const formData = new FormData();
+
+        // Append non-null fields
         for (const key in this.form) {
-          if (this.form[key] !== null) {
+          if (this.form[key] !== null && this.form[key] !== undefined) {
             formData.append(key, this.form[key]);
           }
         }
 
+        if (this.imageFile) {
+          formData.append('Image', this.imageFile);
+        }
+
         formData.append('_method', 'PUT');
+
+        console.log('Submitting form data:', [...formData.entries()]); // Debug
 
         await axios.post(
           `http://localhost:8000/api/members/update/${this.memberId}`,
@@ -127,8 +159,14 @@ export default {
         alert('✅ Member updated successfully!');
         this.$router.push('/members');
       } catch (error) {
-        console.error('Update failed:', error);
-        alert('❌ Failed to update member. Please check input fields.');
+        if (error.response && error.response.status === 422) {
+          console.error('Validation errors:', error.response.data.errors);
+          const errorMessages = Object.values(error.response.data.errors).flat().join('\n');
+          alert('❌ Validation failed:\n' + errorMessages);
+        } else {
+          console.error('Update failed:', error);
+          alert('❌ Failed to update member.');
+        }
       }
     },
     cancelEdit() {
